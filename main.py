@@ -1,39 +1,52 @@
-#Лабораторная работа номер 4 вариант 3
+#Лабораторная работа 5 вариант 3 
 
-from random import randint
+import numpy as np
 
-n = int(input("Введите количество элементов в массиве N (<= 30): "))
-if n > 30: n = 30
-elif n < 5: n = 5
+def MakeIntegerMatr(n, m, a=-5, b=5):
+    #Инициализация матрицы случайными целыми числами
+    return np.random.randint(a, b + 1, size=(n, m))
 
-# Генерация целочисленного массива от -5 до 5
-mas = [randint(-5, 5) for _ in range(n)]
-print("Начальный массив:", mas)
+def CountZeroColumns(Matr):
+    #1. Подсчет столбцов, содержащих хотя бы один ноль
+    nRow, nCol = Matr.shape
+    count = 0
+    for col in range(nCol):
+        if 0 in Matr[:, col]:
+            count += 1
+    return count
 
-#Произведение элементов с четными номерами (индексы 0, 2, 4...)
-prod = 1
-for i in range(0, len(mas), 2):
-    prod *= mas[i]
+def FindLongestSeriesRow(Matr):
+    #2. Определение номера строки с самой длинной серией одинаковых элементов
+    nRow, nCol = Matr.shape
+    max_len = 0
+    best_row = 0
+    for row in range(nRow):
+        cur_len = 1
+        row_max = 1
+        for col in range(1, nCol):
+            if Matr[row, col] == Matr[row, col - 1]:
+                cur_len += 1
+            else:
+                cur_len = 1
+            if cur_len > row_max:
+                row_max = cur_len
+        if row_max > max_len:
+            max_len = row_max
+            best_row = row
+    return best_row + 1  # Возвращаем номер строки с 1
 
-#Сумма элементов между первым и последним нулевыми элементами
-first_zero = -1
-last_zero = -1
-for i in range(len(mas)):
-    if mas[i] == 0:
-        if first_zero == -1:
-            first_zero = i
-        last_zero = i
-
-sum_between = 0
-if first_zero != -1 and last_zero != -1 and last_zero - first_zero > 1:
-    sum_between = sum(mas[first_zero + 1 : last_zero])
-
-#Преобразование массива
-positives = [x for x in mas if x >= 0]
-negatives = [x for x in mas if x < 0]
-transformed_mas = positives + negatives
-
-# Вывод результатов
-print(f"1. Произведение элементов с четными номерами: {prod}")
-print(f"2. Сумма между первым и последним нулями: {sum_between}")
-print(f"3. Преобразованный массив: {transformed_mas}")
+# Основная программа
+if __name__ == "__main__":
+    n = int(input("Введите число строк N: "))
+    m = int(input("Введите число столбцов M: "))
+    
+    MyMatr = MakeIntegerMatr(n, m, -3, 3)
+    print("\nИсходная матрица:")
+    print(MyMatr)
+    
+    zero_cols = CountZeroColumns(MyMatr)
+    target_row = FindLongestSeriesRow(MyMatr)
+    
+    print("\nРезультаты (Лаб. №5, Вариант 3):")
+    print(f"1. Количество столбцов с нулями: {zero_cols}")
+    print(f"2. Номер строки с самой длинной серией: {target_row}")
